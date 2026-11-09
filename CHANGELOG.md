@@ -7,4 +7,5 @@
 - Update Docstring after the signature changed: renamed parameters keep their text, new ones get a placeholder, removed ones are marked. Also for a whole file, and on save if you turn it on.
 - JSDoc for JavaScript and TypeScript with `@param` types, optional and default values, `@returns`, `@throws`, `@yields` and `@template`, and the same update.
 - Defaults and types copied from the code are escaped: triple quotes and backslashes in a docstring, `*/` in a JSDoc block. A default such as `sep='"""'`, `r'\d+'` or `'**/*.ts'` no longer ends the docstring or comment early.
+- Works in VS Code 1.90 and later, Cursor and Windsurf: the parser grammars load from bytes, so the older extension host no longer fails with "A dynamic import callback was not specified".
 - Free, no sign-in, works offline. Rating ask, support links and related tools.
