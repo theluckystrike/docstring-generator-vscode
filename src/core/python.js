@@ -248,6 +248,25 @@ function isMethodAt(src, k) {
   return false;
 }
 
+// Text taken from the code (defaults, types, exception names) goes inside a docstring literal. Escape backslashes
+// and triple quotes so the docstring stays valid Python and its runtime value shows the source text.
+function docSafe(t) {
+  if (t == null || typeof t !== 'string') return t;
+  return t.replace(/\\/g, '\\\\').replace(/"""/g, '\\"\\"\\"').replace(/'''/g, "\\'\\'\\'");
+}
+function safeInfo(info) {
+  if (!info) return info;
+  const fix = (p) => (p ? { ...p, default: docSafe(p.default), type: docSafe(p.type) } : p);
+  return {
+    ...info,
+    params: (info.params || []).map(fix),
+    attributes: (info.attributes || []).map(fix),
+    raises: (info.raises || []).map(docSafe),
+    returns: info.returns ? { ...info.returns, type: docSafe(info.returns.type) } : info.returns,
+    yields: info.yields ? { ...info.yields, type: docSafe(info.yields.type) } : info.yields,
+  };
+}
+
 /**
  * Analyse the def/class for a docstring at line L.
  * mode 'below': L is the line right under the header (where `"""` was typed). triggerLine: that line's text is ignored.
@@ -310,7 +329,7 @@ async function analyze(src, L, { mode = 'enclosing', indentUnit = '    ', classI
   const res = await ts.withTree('python', text, (root) => {
     const node = findDefAtRow(root, h.start - ds + shift);
     if (!node) return { error: 'syntax', errorRow: firstErrorRow(root, ds - shift) };
-    const info = node.type === 'class_definition' ? classInfo(node, opts) : functionInfo(node, opts);
+    const info = safeInfo(node.type === 'class_definition' ? classInfo(node, opts) : functionInfo(node, opts));
     const paramsNode = node.childForFieldName('parameters');
     if (paramsNode && paramsNode.hasError) info.partial = true;
     let doc = null;
@@ -352,7 +371,7 @@ async function analyzeFile(text, { classInitArgs = 'class', skipPrivateAttribute
         const def = c.type === 'decorated_definition' ? c.childForFieldName('definition') : c;
         if (def && (def.type === 'function_definition' || def.type === 'class_definition')) {
           const isClass = def.type === 'class_definition';
-          const info = isClass ? classInfo(def, { classInitArgs, skipPrivateAttributes }) : functionInfo(def, { isMethod: inClass });
+          const info = safeInfo(isClass ? classInfo(def, { classInitArgs, skipPrivateAttributes }) : functionInfo(def, { isMethod: inClass }));
           const body = def.childForFieldName('body');
           const d = docstringNode(body);
           const first = firstStatement(body);
@@ -374,4 +393,4 @@ async function analyzeFile(text, { classInitArgs = 'class', skipPrivateAttribute
   });
 }
 
-module.exports = { analyze, analyzeFile, parseParams, normType, yieldType, splitTop, isMethodAt, strip };
+module.exports = { analyze, analyzeFile, docSafe, parseParams, normType, yieldType, splitTop, isMethodAt, strip };

@@ -101,6 +101,13 @@ function fnName(fn) {
   return '';
 }
 
+// Text taken from the code goes inside a /** */ block: "*/" in a default (a glob like '**/*.ts') or a type would end
+// the comment early and break the file. JSDoc's convention is "*\/".
+const cmtSafe = (t) => (t == null || typeof t !== 'string' ? t : t.replace(/\*\//g, '*\\/'));
+function safeParam(p) {
+  return { ...p, default: cmtSafe(p.default), type: cmtSafe(p.type), props: (p.props || []).map((q) => ({ ...q, default: cmtSafe(q.default), type: cmtSafe(q.type) })) };
+}
+
 function info(fn, isTs) {
   const isClass = /class/.test(fn.type);
   const tparams = fn.childForFieldName('type_parameters');
@@ -121,7 +128,7 @@ function info(fn, isTs) {
     else if (!ret && f.returnsValue) returns = { type: isTs ? '' : isAsync ? 'Promise<*>' : '' };
     else if (!ret && isAsync && !isTs) returns = null;
   }
-  return { kind: 'function', name: fnName(fn), params: params(fn, isTs), templates, returns, yields, throws: f.throws, isAsync };
+  return { kind: 'function', name: fnName(fn), params: params(fn, isTs).map(safeParam), templates, returns: returns && { ...returns, type: cmtSafe(returns.type) }, yields: yields && { ...yields, type: cmtSafe(yields.type) }, throws: f.throws, isAsync };
 }
 
 function anchorOf(fn) {

@@ -107,7 +107,7 @@ function newType(p, oldType, o, style) {
 
 function fixDefaultsText(text, p) {
   if (p.default == null) return text.replace(/\s*Defaults to .*?\.(?=\s|$)/, '');
-  return text.replace(/Defaults to (.*?)\.(?=\s|$)/, `Defaults to ${p.default}.`);
+  return text.replace(/Defaults to (.*?)\.(?=\s|$)/, () => `Defaults to ${p.default}.`); // a function: '$1' or '$&' in a default stays literal
 }
 
 function rewriteEntry(e, p, o, style, unit) {
