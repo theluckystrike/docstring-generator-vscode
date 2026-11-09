@@ -1,0 +1,359 @@
+{
+  "name": "zovo-docstring-generator",
+  "displayName": "Docstring Generator & Python Docstring Updater (Google, NumPy, Sphinx, JSDoc)",
+  "description": "Free docstring generator for Python: type \"\"\" under a def or class and press Enter. Google, NumPy, Sphinx (reST) and Epytext styles or your own template, filled from the signature: type hints, defaults, *args, **kwargs, positional-only and keyword-only parameters, return type, yield, raise, dataclass fields and __init__ arguments. Updates a python docstring when the signature changes and keeps your text. JSDoc with TypeScript types for JS and TS. No sign-in, works offline.",
+  "version": "0.1.0",
+  "publisher": "zovo",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1E2A38",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=18"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "docstring",
+    "python docstring",
+    "docstring generator",
+    "python",
+    "google style",
+    "numpy style",
+    "sphinx",
+    "reST",
+    "epytext",
+    "type hints",
+    "jsdoc",
+    "jsdoc generator",
+    "documentation",
+    "pydoc",
+    "dataclass",
+    "update docstring",
+    "free",
+    "offline"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In Restricted Mode the custom template path from the workspace settings is not used.",
+      "restrictedConfigurations": [
+        "zovoDoc.customTemplatePath"
+      ]
+    },
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "zovoDoc.generate",
+        "title": "Generate Docstring",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.update",
+        "title": "Update Docstring (Signature Changed)",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.updateAllInFile",
+        "title": "Update All Docstrings in File",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.generateAllMissingInFile",
+        "title": "Add Missing Docstrings in File",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.generateJsdoc",
+        "title": "Generate JSDoc",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.coverageReport",
+        "title": "Docstring Coverage Report (Workspace)",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.chooseStyle",
+        "title": "Choose Docstring Style",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.showLog",
+        "title": "Show Log",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.supportDeveloper",
+        "title": "Support the developer",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.moreViewers",
+        "title": "More free tools by Zovo",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.unlockWithSponsors",
+        "title": "Unlock Zovo Pro with GitHub Sponsors",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.enterLicenseKey",
+        "title": "Enter Zovo Pro License Key",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.getPro",
+        "title": "Get Zovo Pro (USD 19 once, all Zovo tools)",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc.removeLicense",
+        "title": "Remove Zovo Pro License",
+        "category": "Docstring"
+      },
+      {
+        "command": "zovoDoc._inserted",
+        "title": "Docstring inserted (internal)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        { "command": "zovoDoc.unlockWithSponsors", "when": "zovoDoc.proEnabled" },
+        { "command": "zovoDoc.enterLicenseKey", "when": "zovoDoc.proEnabled" },
+        { "command": "zovoDoc.getPro", "when": "zovoDoc.proEnabled" },
+        { "command": "zovoDoc.removeLicense", "when": "zovoDoc.proEnabled" },
+        { "command": "zovoDoc._inserted", "when": "false" },
+        { "command": "zovoDoc.updateAllInFile", "when": "editorLangId == python" },
+        { "command": "zovoDoc.generateAllMissingInFile", "when": "editorLangId == python" },
+        { "command": "zovoDoc.generateJsdoc", "when": "editorLangId =~ /^(javascript|typescript)(react)?$/" },
+        { "command": "zovoDoc.generate", "when": "editorLangId =~ /^(python|javascript|typescript|javascriptreact|typescriptreact)$/" },
+        { "command": "zovoDoc.update", "when": "editorLangId =~ /^(python|javascript|typescript|javascriptreact|typescriptreact)$/" }
+      ],
+      "editor/context": [
+        {
+          "command": "zovoDoc.generate",
+          "group": "1_modification@90",
+          "when": "editorLangId == python && !editorReadonly"
+        },
+        {
+          "command": "zovoDoc.update",
+          "group": "1_modification@91",
+          "when": "editorLangId == python && !editorReadonly"
+        },
+        {
+          "command": "zovoDoc.generateJsdoc",
+          "group": "1_modification@90",
+          "when": "editorLangId =~ /^(javascript|typescript)(react)?$/ && !editorReadonly"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "zovoDoc.generate",
+        "key": "ctrl+shift+2",
+        "mac": "cmd+shift+2",
+        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^(python|javascript|typescript|javascriptreact|typescriptreact)$/"
+      }
+    ],
+    "configuration": {
+      "title": "Docstring Generator",
+      "properties": {
+        "zovoDoc.style": {
+          "type": "string",
+          "enum": ["google", "numpy", "sphinx", "epytext", "custom"],
+          "enumDescriptions": [
+            "Google style: Args:, Returns:, Yields:, Raises:",
+            "NumPy style: Parameters / Returns sections with dashed underlines",
+            "Sphinx (reStructuredText): :param x:, :type x:, :return:, :rtype:, :raises X:",
+            "Epytext: @param x:, @type x:, @return:, @rtype:, @raise X:",
+            "Your own Mustache template file (zovoDoc.customTemplatePath)"
+          ],
+          "default": "google",
+          "description": "Docstring style for new Python docstrings. Updating keeps the style a docstring already has."
+        },
+        "zovoDoc.customTemplatePath": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Mustache template for the `custom` style. Relative paths start at the workspace folder; `~`, `${workspaceFolder}`, `${userHome}` and `${env:NAME}` work. See the README for the variables."
+        },
+        "zovoDoc.includeTypes": {
+          "type": "string",
+          "enum": ["always", "hinted", "never"],
+          "enumDescriptions": [
+            "Write the type hint, or a type placeholder when there is no hint",
+            "Write types only when the signature has a type hint",
+            "No types in docstrings (the type hints are enough, PEP 484)"
+          ],
+          "default": "always",
+          "description": "Types in docstrings."
+        },
+        "zovoDoc.includeDefaults": {
+          "type": "boolean",
+          "default": true,
+          "description": "Mention default values (\"Defaults to 2.\", \"default 2\", \"defaults to 2\")."
+        },
+        "zovoDoc.optionalMarker": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add \", optional\" after the type of a parameter that has a default (Google and Sphinx)."
+        },
+        "zovoDoc.quoteStyle": {
+          "type": "string",
+          "enum": ["\"\"\"", "'''"],
+          "default": "\"\"\"",
+          "description": "Quotes for docstrings made by commands. Typing ''' uses ''' anyway."
+        },
+        "zovoDoc.summaryOnNewLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "Start the summary on the line after the opening quotes (pydocstyle D213) instead of on the same line (D212)."
+        },
+        "zovoDoc.includeExtendedSummary": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add an extended description placeholder under the summary."
+        },
+        "zovoDoc.blankLineAfterLastSection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Put a blank line before the closing quotes (pydocstyle D413)."
+        },
+        "zovoDoc.generateOnTripleQuote": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer \"Generate Docstring\" in the suggestions when you type \"\"\" or ''' under a def or class."
+        },
+        "zovoDoc.generateOnEnter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also generate when you press Enter after \"\"\" and the suggestion was not shown or not picked."
+        },
+        "zovoDoc.classInitArguments": {
+          "type": "string",
+          "enum": ["class", "init"],
+          "enumDescriptions": [
+            "List the __init__ arguments in the class docstring",
+            "Leave them for the __init__ docstring"
+          ],
+          "default": "class",
+          "description": "Where the __init__ arguments of a class are documented."
+        },
+        "zovoDoc.update.removedParameters": {
+          "type": "string",
+          "enum": ["mark", "delete"],
+          "enumDescriptions": [
+            "Keep the text of a removed parameter and mark it [removed from the signature]",
+            "Delete removed parameters"
+          ],
+          "default": "mark",
+          "description": "What Update Docstring does with a parameter that is no longer in the signature. Parameters that only hold a placeholder are always deleted."
+        },
+        "zovoDoc.updateOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Update the docstrings of a Python file when you save it (new, renamed and removed parameters, types, Returns and Raises)."
+        },
+        "zovoDoc.bulk.skipPrivate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add Missing Docstrings and the coverage report skip names that start with _ (except __init__)."
+        },
+        "zovoDoc.jsdoc.typesInTypeScript": {
+          "type": "boolean",
+          "default": true,
+          "description": "Write {types} in JSDoc in TypeScript files too."
+        },
+        "zovoDoc.report.maxFileMB": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0.1,
+          "maximum": 100,
+          "description": "The coverage report skips Python files larger than this."
+        },
+        "zovoDoc.showSupportLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the small Rate, More free tools, Sponsor and PayPal links at the bottom of the coverage report."
+        },
+        "zovoDoc.askForRating": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for a Marketplace rating at most twice, after the extension worked for you in two sessions."
+        }
+      }
+    },
+    "walkthroughs": [
+      {
+        "id": "zovoDoc.start",
+        "title": "Get started with Docstring Generator",
+        "description": "Docstrings from the signature in Google, NumPy, Sphinx or Epytext style, and JSDoc for JS and TS.",
+        "steps": [
+          {
+            "id": "type",
+            "title": "Type \"\"\" and press Enter",
+            "description": "On the line under a def or class, type three quotes and press Enter. Tab moves through the placeholders.",
+            "media": { "markdown": "walkthrough/generate.md" }
+          },
+          {
+            "id": "style",
+            "title": "Pick a style",
+            "description": "Google is the default. NumPy, Sphinx (reST), Epytext or your own template are one setting away.\n[Choose Docstring Style](command:zovoDoc.chooseStyle)",
+            "media": { "markdown": "walkthrough/style.md" },
+            "completionEvents": ["onCommand:zovoDoc.chooseStyle"]
+          },
+          {
+            "id": "update",
+            "title": "Update after the signature changed",
+            "description": "Renamed, added or removed a parameter? Put the cursor in the function and run Update Docstring. Your text stays.\n[Update Docstring](command:zovoDoc.update)",
+            "media": { "markdown": "walkthrough/update.md" },
+            "completionEvents": ["onCommand:zovoDoc.update"]
+          },
+          {
+            "id": "jsdoc",
+            "title": "JSDoc with types",
+            "description": "In JavaScript and TypeScript, type /** above a function and pick \"JSDoc with types\", or run Generate JSDoc.\n[Generate JSDoc](command:zovoDoc.generateJsdoc)",
+            "media": { "markdown": "walkthrough/jsdoc.md" },
+            "completionEvents": ["onCommand:zovoDoc.generateJsdoc"]
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "package": "npx -y @vscode/vsce@3 package --no-dependencies --no-gitHubIssueLinking -o dist/"
+  },
+  "devDependencies": {
+    "@types/vscode": "~1.90.0"
+  },
+  "homepage": "https://github.com/theluckystrike/docstring-generator-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/theluckystrike/docstring-generator-vscode/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/docstring-generator-vscode"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/theluckystrike"
+  }
+}
